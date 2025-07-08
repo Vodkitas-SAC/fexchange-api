@@ -28,6 +28,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'foreign_exchange',
   synchronize: false, // IMPORTANTE: Cambiar a false para usar migraciones
   logging: process.env.NODE_ENV === 'development',
+  ssl: process.env.DB_HOST?.includes('neon.tech') ? { rejectUnauthorized: false } : false,
   entities: [
     Persona,        // Persona PRIMERA porque Usuario y Cliente dependen de ella
     CasaDeCambio,
@@ -42,6 +43,12 @@ export const AppDataSource = new DataSource({
     MontoApertura,
     MontoCierre,
   ],
-  migrations: ['src/Migrations/*.ts'],
-  subscribers: ['src/Subscribers/*.ts'],
+  migrations: [
+    'src/Migrations/*.ts'
+  ],
+  subscribers: [
+    process.env.NODE_ENV === 'production' 
+      ? 'dist/Subscribers/*.js' 
+      : 'src/Subscribers/*.ts'
+  ],
 });

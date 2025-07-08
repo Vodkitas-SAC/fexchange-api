@@ -20,11 +20,11 @@ config();
 
 class App {
   public app: express.Application;
-  public port: string | number;
+  public port: number;
 
   constructor() {
     this.app = express();
-    this.port = process.env.PORT || 3000;
+    this.port = parseInt(process.env.PORT || '3000');
 
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -114,7 +114,7 @@ class App {
   }
 
   public listen(): void {
-    this.app.listen(this.port, () => {
+    this.app.listen(this.port, '0.0.0.0', () => {
       console.log(`🚀 Servidor ejecutándose en puerto ${this.port}`);
       console.log(`🌐 Modo: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📡 API disponible en: http://localhost:${this.port}/api`);
