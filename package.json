@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "postbuild": "npm run migration:run && npm run seed:prod",
+    "deploy": "npm run migration:run && npm run seed:prod",
     "seed:prod": "NODE_ENV=production ts-node src/Scripts/InitialSeeder.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
