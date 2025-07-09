@@ -24,7 +24,7 @@ class App {
 
   constructor() {
     this.app = express();
-    this.port = parseInt(process.env.PORT || '3000');
+    this.port = parseInt(process.env.PORT || '3000', 10);
 
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -60,12 +60,23 @@ class App {
   }
 
   private initializeRoutes(): void {
+    // Ruta básica para verificar que el servidor está funcionando
+    this.app.get('/', (req, res) => {
+      res.json({
+        message: 'Foreign Exchange API is running',
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+      });
+    });
+
     // Ruta de salud
     this.app.get('/api/health', (req, res) => {
       res.json({
         status: 'OK',
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || 'development',
+        port: this.port,
       });
     });
 
@@ -101,6 +112,12 @@ class App {
 
   private async initializeDatabase(): Promise<void> {
     try {
+      console.log('🔌 Intentando conectar a la base de datos...');
+      console.log(`📍 Host: ${process.env.DB_HOST}`);
+      console.log(`📍 Puerto: ${process.env.DB_PORT}`);
+      console.log(`📍 Base de datos: ${process.env.DB_NAME}`);
+      console.log(`📍 Usuario: ${process.env.DB_USERNAME}`);
+      
       await AppDataSource.initialize();
       console.log('✅ Conexión a la base de datos establecida correctamente');
       
@@ -109,16 +126,28 @@ class App {
       }
     } catch (error) {
       console.error('❌ Error al conectar con la base de datos:', error);
-      process.exit(1);
+      console.error('⚠️  La aplicación continuará sin base de datos para debug');
+      // No salir de la aplicación para permitir debugging en producción
+      // process.exit(1);
     }
   }
 
   public listen(): void {
-    this.app.listen(this.port, '0.0.0.0', () => {
+    console.log(`📍 Intentando escuchar en puerto: ${this.port}`);
+    console.log(`🌍 Variables de entorno PORT: ${process.env.PORT}`);
+    
+    const server = this.app.listen(this.port, () => {
       console.log(`🚀 Servidor ejecutándose en puerto ${this.port}`);
       console.log(`🌐 Modo: ${process.env.NODE_ENV || 'development'}`);
       console.log(`📡 API disponible en: http://localhost:${this.port}/api`);
       console.log(`❤️  Health check: http://localhost:${this.port}/api/health`);
+    });
+
+    server.on('error', (error: any) => {
+      console.error('❌ Error al iniciar el servidor:', error);
+      if (error.code === 'EADDRINUSE') {
+        console.error(`🚫 Puerto ${this.port} ya está en uso`);
+      }
     });
   }
 }
