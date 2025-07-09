@@ -5,7 +5,8 @@
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "node ./dist/app.js",
+    "start:prod": "cd /opt/render/project && node dist/app.js",
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "deploy": "npm run migration:run && npm run seed:prod",
     "seed:prod": "NODE_ENV=production ts-node src/Scripts/InitialSeeder.ts",
