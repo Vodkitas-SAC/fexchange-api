@@ -113,11 +113,6 @@ class App {
   private async initializeDatabase(): Promise<void> {
     try {
       console.log('🔌 Intentando conectar a la base de datos...');
-      console.log(`📍 Host: ${process.env.DB_HOST}`);
-      console.log(`📍 Puerto: ${process.env.DB_PORT}`);
-      console.log(`📍 Base de datos: ${process.env.DB_NAME}`);
-      console.log(`📍 Usuario: ${process.env.DB_USERNAME}`);
-      
       await AppDataSource.initialize();
       console.log('✅ Conexión a la base de datos establecida correctamente');
       
@@ -126,9 +121,13 @@ class App {
       }
     } catch (error) {
       console.error('❌ Error al conectar con la base de datos:', error);
-      console.error('⚠️  La aplicación continuará sin base de datos para debug');
-      // No salir de la aplicación para permitir debugging en producción
-      // process.exit(1);
+      
+      // En producción, permitir que la aplicación continúe para debugging
+      if (process.env.NODE_ENV === 'production') {
+        console.error('⚠️  La aplicación continuará sin base de datos para debug');
+      } else {
+        process.exit(1);
+      }
     }
   }
 

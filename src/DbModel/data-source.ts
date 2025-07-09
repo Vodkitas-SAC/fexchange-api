@@ -43,12 +43,6 @@ export const AppDataSource = new DataSource({
     MontoApertura,
     MontoCierre,
   ],
-  migrations: [
-    'src/Migrations/*.ts'
-  ],
-  subscribers: [
-    process.env.NODE_ENV === 'production' 
-      ? 'dist/Subscribers/*.js' 
-      : 'src/Subscribers/*.ts'
-  ],
+  migrations: [],
+  subscribers: [],
 });
